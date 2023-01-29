@@ -1,6 +1,8 @@
 #!/bin/bash
 
 readonly hosts=( your_array_with_hosts )
+#hosts should be of the following types http://localhost:8008/cluster
+#for more information read the official Patroni API documentation - https://patroni.readthedocs.io/en/latest/rest_api.html
 
 qty=0
 master=( )
