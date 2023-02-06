@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-INPUT_ARR_HOSTS=($1) #example ./check_patroni_master "localhost;localhost;localhost"
+INPUT_ARR_HOSTS=($1) #example ./check_patroni_master.sh "localhost;localhost;localhost"
 
 ARR_HOSTS=($(echo $INPUT_ARR_HOSTS | tr ";" "\n"))
 
