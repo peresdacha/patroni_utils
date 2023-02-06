@@ -1,31 +1,28 @@
-#!/bin/bash
+#!/bin/bash 
 
-readonly hosts=( your_array_with_hosts )
-#hosts should look like this - http://localhost:8008/cluster
-#for more information read the official Patroni API documentation - https://patroni.readthedocs.io/en/latest/rest_api.html
+INPUT_ARR_HOSTS=($1) #example ./check_patroni_master "localhost;localhost;localhost"
 
-qty=0
-master=( )
+ARR_HOSTS=($(echo $INPUT_ARR_HOSTS | tr ";" "\n"))
 
-for ix in ${!hosts[*]}
-do
-    res=$(curl -s "${hosts[$ix]}" | jq '.members.role')
-    if [[ "$res" == "leader" ]]
+function check_exist { 
+    res=$(curl -s "http://${1}:8008/cluster" | jq -r '.members[] | select(.role=="leader") | .name') 
+
+    if [ -z "$res" ]
     then
-        qty=$(( "$qty" + 1 ))
-        master[$ix]+="${hosts[$ix]}"
+        continue
+    else 
+        echo ${res}
+        exit 0
     fi
+} 
+
+for ix in ${!ARR_HOSTS[*]}
+do
+   check_exist ${ARR_HOSTS[$ix]} 
 done
 
-if [[ "$qty" -gt 1 ]]
+if [ -z "$res" ] 
 then 
-    echo "WARNING: more than one master! Actual master quantity - $qty"
-elif [[ "$qty" == 0 ]]
-then
-    echo "WARNING: master not found!"
-fi
-
-for ix in ${!master[*]}
-do 
-    echo "${master[$ix]}"
-done
+    echo "WARNING: master not found!" 
+    exit 1
+fi 
